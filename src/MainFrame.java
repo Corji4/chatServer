@@ -18,7 +18,8 @@ public class MainFrame extends JFrame {
     private static final int MEDIUM_GAP = 10;
 
     private static final int IN_PORT = 8080;
-    private static ArrayList<Integer> OUT_PORTS = new ArrayList<Integer>(0);
+    private static ArrayList<Integer> outPorts = new ArrayList<Integer>(0);
+    private static ArrayList<Address> allAddresses = new ArrayList<Address>(0);
 
     private final String MY_ADDRESS = InetAddress.getLocalHost().getHostAddress();
 
@@ -35,6 +36,7 @@ public class MainFrame extends JFrame {
         setLocation((kit.getScreenSize().width - getWidth()) / 2, (kit.getScreenSize().height - getHeight()) / 2);
         // Текстовая область для отображения полученных сообщений
         textAreaIncoming = new JTextArea(INCOMING_AREA_DEFAULT_ROWS, 0);
+        textAreaIncoming.setText("Адресс сервера: " + MY_ADDRESS + "\n");
         textAreaIncoming.setEnabled(false);
         textAreaIncoming.setSelectedTextColor(Color.BLACK);
         textAreaIncoming.setDisabledTextColor(Color.BLACK);
@@ -68,17 +70,18 @@ public class MainFrame extends JFrame {
                         senderName = in.readUTF();
                         message = in.readUTF();
                         Integer somePort = Integer.parseInt(in.readUTF());
-                        if (!(OUT_PORTS.contains(somePort))) {
-                            OUT_PORTS.add(somePort);
-                        }
                         // Закрываем соединение
                         socket.close();
-                        final String address = ((InetSocketAddress) socket
+                        final String someIP = ((InetSocketAddress) socket
                                 .getRemoteSocketAddress())
                                 .getAddress()
                                 .getHostAddress();
+                        Address fullAddress = new Address(someIP, somePort);
+                        if (!(allAddresses.contains(fullAddress))) {
+                            allAddresses.add(fullAddress);
+                        }
                         // Выводим сообщение в текстовую область
-                        textAreaIncoming.append(senderName + " (" + address + "): " + message + "\n");
+                        textAreaIncoming.append(senderName + " (" + fullAddress + "): " + message + "\n");
                         sendMessage();
                     }
                 } catch (IOException e) {
@@ -92,11 +95,9 @@ public class MainFrame extends JFrame {
 
     private void sendMessage() {
         try {
-            // Получаем необходимые параметры
-            final String destinationAddress = MY_ADDRESS;
             // Создадим сокет для соединения
-            for(Integer port: OUT_PORTS) {
-                final Socket socket = new Socket(destinationAddress, port);
+            for (Address fullAddress : allAddresses) {
+                final Socket socket = new Socket(fullAddress.getIP(), fullAddress.getPort());
                 // Открываем поток вывода данных
                 final DataOutputStream out =
                         new DataOutputStream(socket.getOutputStream());
@@ -119,6 +120,7 @@ public class MainFrame extends JFrame {
                     "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
