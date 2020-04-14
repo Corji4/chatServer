@@ -1,10 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class MainFrame extends JFrame {
 
@@ -38,7 +37,7 @@ public class MainFrame extends JFrame {
         setLocation((kit.getScreenSize().width - getWidth()) / 2, (kit.getScreenSize().height - getHeight()) / 2);
         // Текстовая область для отображения полученных сообщений
         textAreaIncoming = new JTextArea(INCOMING_AREA_DEFAULT_ROWS, 0);
-        textAreaIncoming.setText("Адресс сервера: " + MY_ADDRESS + "\n");
+        textAreaIncoming.setText("Адресс сервера: " + MY_ADDRESS + ":" + IN_PORT + "\n");
         textAreaIncoming.setEnabled(false);
         textAreaIncoming.setSelectedTextColor(Color.BLACK);
         textAreaIncoming.setDisabledTextColor(Color.BLACK);
@@ -67,24 +66,28 @@ public class MainFrame extends JFrame {
                     final ServerSocket serverSocket = new ServerSocket(IN_PORT);
                     while (!Thread.interrupted()) {
                         final Socket socket = serverSocket.accept();
-                        final DataInputStream in = new DataInputStream(socket.getInputStream());
-                        // Читаем из потока
-                        senderName = in.readUTF();
-                        message = in.readUTF();
-                        Integer somePort = Integer.parseInt(in.readUTF());
-                        // Закрываем соединение
-                        socket.close();
-                        final String someIP = ((InetSocketAddress) socket
-                                .getRemoteSocketAddress())
-                                .getAddress()
-                                .getHostAddress();
-                        Address fullAddress = new Address(someIP, somePort);
+                        final InputStream in = socket.getInputStream();
+                        FileOutputStream fOut = new FileOutputStream(new File("src/messageSettings"));
+                        byte[] bt = new byte[1024];
+                        while ((in.read(bt))> 0) {
+                            fOut.write(bt);
+                        }
+                        fOut.close();
+                        Scanner fIn = new Scanner(new File("src/messageSettings"));
+                        Address fullAddress = new Address(fIn.nextLine(), Integer.parseInt(fIn.nextLine()));
                         if (!(allAddresses.contains(fullAddress))) {
                             allAddresses.add(fullAddress);
                         }
-                        // Выводим сообщение в текстовую область
-                        textAreaIncoming.append(senderName + " (" + fullAddress + "): " + message + "\n");
-                        sendMessage();
+                        senderName = fIn.nextLine();
+                        String messageType = fIn.nextLine();
+                        if (messageType.equals("SEND ALL")) {
+                            message = "";
+                            while (fIn.hasNext()) {
+                                message += "        │" + fIn.nextLine() + "\n";
+                            }
+                            textAreaIncoming.append(senderName + " (" + fullAddress + "): \n" + message + "\n");
+                            sendMessage();
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -94,33 +97,6 @@ public class MainFrame extends JFrame {
             }
         }).start();
     }
-
-//    private void sendMessage() {
-//        try {
-//            // Создадим сокет для соединения
-//            for (Address fullAddress : allAddresses) {
-//                // Открываем поток вывода данных
-//                Socket socket = new Socket(fullAddress.getIP(), fullAddress.getPort());
-//                final DataOutputStream out =
-//                        new DataOutputStream(socket.getOutputStream());
-//                // Записываем в поток
-//                out.writeUTF(senderName);
-//                out.writeUTF(message);
-//                // Закрываем сокет
-//                socket.close();
-//            }
-//        } catch (UnknownHostException e) {
-//            e.printStackTrace();
-//            JOptionPane.showMessageDialog(MainFrame.this,
-//                    "Не удалось отправить сообщение: узел-адресат не найден",
-//                    "Ошибка", JOptionPane.ERROR_MESSAGE);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            JOptionPane.showMessageDialog(MainFrame.this,
-//                    "Не удалось отправить сообщение",
-//                    "Ошибка", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
 
     private void sendMessage() {
         for (int i = 0; i < allAddresses.size(); i++) {
