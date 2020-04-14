@@ -28,6 +28,8 @@ public class MainFrame extends JFrame {
     private String senderName = null;
     private String message = null;
 
+    private int deleteNumber;
+
     public MainFrame() throws UnknownHostException {
         super(FRAME_TITLE);
         setMinimumSize(new Dimension(FRAME_MINIMUM_WIDTH, FRAME_MINIMUM_HEIGHT));
@@ -93,12 +95,38 @@ public class MainFrame extends JFrame {
         }).start();
     }
 
+//    private void sendMessage() {
+//        try {
+//            // Создадим сокет для соединения
+//            for (Address fullAddress : allAddresses) {
+//                // Открываем поток вывода данных
+//                Socket socket = new Socket(fullAddress.getIP(), fullAddress.getPort());
+//                final DataOutputStream out =
+//                        new DataOutputStream(socket.getOutputStream());
+//                // Записываем в поток
+//                out.writeUTF(senderName);
+//                out.writeUTF(message);
+//                // Закрываем сокет
+//                socket.close();
+//            }
+//        } catch (UnknownHostException e) {
+//            e.printStackTrace();
+//            JOptionPane.showMessageDialog(MainFrame.this,
+//                    "Не удалось отправить сообщение: узел-адресат не найден",
+//                    "Ошибка", JOptionPane.ERROR_MESSAGE);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            JOptionPane.showMessageDialog(MainFrame.this,
+//                    "Не удалось отправить сообщение",
+//                    "Ошибка", JOptionPane.ERROR_MESSAGE);
+//        }
+//    }
+
     private void sendMessage() {
-        try {
-            // Создадим сокет для соединения
-            for (Address fullAddress : allAddresses) {
-                final Socket socket = new Socket(fullAddress.getIP(), fullAddress.getPort());
-                // Открываем поток вывода данных
+        for (int i = 0; i < allAddresses.size(); i++) {
+            deleteNumber = i;
+            try {
+                Socket socket = new Socket(allAddresses.get(i).getIP(), allAddresses.get(i).getPort());
                 final DataOutputStream out =
                         new DataOutputStream(socket.getOutputStream());
                 // Записываем в поток
@@ -106,18 +134,11 @@ public class MainFrame extends JFrame {
                 out.writeUTF(message);
                 // Закрываем сокет
                 socket.close();
+            } catch (Exception e) {
+                //DELETE address
+                allAddresses.removeIf(address -> (address.equals(allAddresses.get(deleteNumber))));
+                i--;
             }
-            // Очищаем текстовую область ввода сообщения
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(MainFrame.this,
-                    "Не удалось отправить сообщение: узел-адресат не найден",
-                    "Ошибка", JOptionPane.ERROR_MESSAGE);
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(MainFrame.this,
-                    "Не удалось отправить сообщение",
-                    "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
     }
 
