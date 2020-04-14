@@ -69,7 +69,7 @@ public class MainFrame extends JFrame {
                         final InputStream in = socket.getInputStream();
                         FileOutputStream fOut = new FileOutputStream(new File("src/messageSettings"));
                         byte[] bt = new byte[1024];
-                        while ((in.read(bt))> 0) {
+                        while ((in.read(bt)) > 0) {
                             fOut.write(bt);
                         }
                         fOut.close();
@@ -78,16 +78,34 @@ public class MainFrame extends JFrame {
                         if (!(allAddresses.contains(fullAddress))) {
                             allAddresses.add(fullAddress);
                         }
-                        senderName = fIn.nextLine();
                         String messageType = fIn.nextLine();
-                        if (messageType.equals("SEND ALL")) {
-                            message = "";
-                            while (fIn.hasNext()) {
-                                message += "        │" + fIn.nextLine() + "\n";
+                        switch (messageType) {
+                            case "SEND_ALL": {
+                                senderName = fIn.nextLine();
+                                message = "";
+                                while (fIn.hasNext()) {
+                                    message += "        │" + fIn.nextLine() + "\n";
+                                }
+                                textAreaIncoming.append(senderName + " (" + fullAddress + "): \n" + message + "\n");
+                                sendMessage();
                             }
-                            textAreaIncoming.append(senderName + " (" + fullAddress + "): \n" + message + "\n");
-                            sendMessage();
+                            case "CHECK_CONNECTION": {
+                                //NOTING
+                            }
+                            default: {
+                            }
                         }
+//                        if (messageType.equals("SEND_ALL")) {
+//                            senderName = fIn.nextLine();
+//                            message = "";
+//                            while (fIn.hasNext()) {
+//                                message += "        │" + fIn.nextLine() + "\n";
+//                            }
+//                            textAreaIncoming.append(senderName + " (" + fullAddress + "): \n" + message + "\n");
+//                            sendMessage();
+//                        } else if (messageType.equals("CHECK_CONNECTION")) {
+//                            // NOTHING
+//                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
