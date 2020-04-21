@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class User {
 
-    private String  login;
+    private String login;
     private String password;
 
     public User(String login, String password) {
@@ -19,6 +19,11 @@ public class User {
         User user = (User) o;
         return Objects.equals(login, user.login) &&
                 Objects.equals(password, user.password);
+    }
+
+    @Override
+    public String toString() {
+        return login + " " + password;
     }
 
     public String getLogin() {

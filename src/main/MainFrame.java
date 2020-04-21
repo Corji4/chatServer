@@ -115,6 +115,7 @@ public class MainFrame extends JFrame {
                                 String[] info = usersFile.nextLine().split(" ");
                                 users.add(new User(info[0], info[1]));
                             }
+                            usersFile.close();
                             successfulAuthorizationOrRegistration = true;
                             for (User user : users) {
                                 if (user.equals(someUser) ||
@@ -123,6 +124,9 @@ public class MainFrame extends JFrame {
                                     break;
                                 }
                             }
+                            FileWriter addUser = new FileWriter(new File("src/users.txt"), true);
+                            addUser.write("\n" + senderLogin + " " + senderPassword);
+                            addUser.close();
                             sendMessage("REGISTRATION", fullAddress);
                         } else if (messageType.toUpperCase().equals("SEND_ALL")) {
                             senderName = in.readUTF();
@@ -166,7 +170,7 @@ public class MainFrame extends JFrame {
             } catch (Exception e) {
 
             }
-        }else if (type.toUpperCase().equals("SEND_ALL")) {
+        } else if (type.toUpperCase().equals("SEND_ALL")) {
             for (int i = 0; i < allAddresses.size(); i++) {
                 deleteNumber = i;
                 try {
