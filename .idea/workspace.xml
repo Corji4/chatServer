@@ -2,17 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d83e06f9-48af-400e-b446-b8a452617560" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/User.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/users.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/server/Address.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/server/MainFrame$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/server/MainFrame$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/server/MainFrame.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/server/messageSettings" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/server/messageSettings" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Address.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Address.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MainFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/MainFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/messageSettings" beforeDir="false" afterPath="$PROJECT_DIR$/src/messageSettings" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/server/main/MainFrame$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/server/main/MainFrame$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/server/main/MainFrame$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/server/main/MainFrame$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/server/main/MainFrame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/server/main/MainFrame.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/server/main/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/server/main/User.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/MainFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/MainFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/users.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/users.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -79,7 +76,7 @@
       <workItem from="1586850630859" duration="6413000" />
       <workItem from="1586862533859" duration="4583000" />
       <workItem from="1586949923722" duration="14000" />
-      <workItem from="1587451075148" duration="8278000" />
+      <workItem from="1587451075148" duration="15395000" />
     </task>
     <servers />
   </component>

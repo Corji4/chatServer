@@ -28,7 +28,7 @@ public class MainFrame extends JFrame {
 
     private String senderName = null;
     private String message = null;
-    private boolean successfulAuthorization;
+    private boolean successfulAuthorizationOrRegistration;
 
     private ArrayList<User> users = new ArrayList<>(0);
 
@@ -79,59 +79,56 @@ public class MainFrame extends JFrame {
                         if (!(allAddresses.contains(fullAddress))) {
                             allAddresses.add(fullAddress);
                         }
-                        switch (messageType) {
-                            case "AUTHORIZATION": {
-                                String senderLogin = in.readUTF();
-                                String senderPassword = in.readUTF();
-                                User someUser = new User(senderLogin, senderPassword);
+                        if (messageType.toUpperCase().equals("AUTHORIZATION")) {
+                            String senderLogin = in.readUTF();
+                            String senderPassword = in.readUTF();
+                            User someUser = new User(senderLogin, senderPassword);
 
-                                Scanner usersFile = new Scanner(new File("src/users.txt"));
-                                // пропускаем уже записанных
-                                for (int i = 0; i < users.size(); i++) {
-                                    String info = usersFile.nextLine();
-                                }
-                                while (usersFile.hasNext()) {
-                                    String[] info = usersFile.nextLine().split(" ");
-                                    users.add(new User(info[0], info[1]));
-                                }
-                                successfulAuthorization = false;
-                                for (User user : users) {
-                                    if (user.equals(someUser)) {
-                                        successfulAuthorization = true;
-                                        break;
-                                    }
-                                }
-                                sendMessage("AUTHORIZATION", fullAddress);
+                            Scanner usersFile = new Scanner(new File("src/users.txt"));
+                            // пропускаем уже записанных
+                            for (int i = 0; i < users.size(); i++) {
+                                String info = usersFile.nextLine();
                             }
-                            case "REGISTRATION": {
-                                String senderLogin = in.readUTF();
-                                String senderPassword = in.readUTF();
-                                User someUser = new User(senderLogin, senderPassword);
+                            while (usersFile.hasNext()) {
+                                String[] info = usersFile.nextLine().split(" ");
+                                users.add(new User(info[0], info[1]));
+                            }
+                            successfulAuthorizationOrRegistration = false;
+                            for (User user : users) {
+                                if (user.equals(someUser)) {
+                                    successfulAuthorizationOrRegistration = true;
+                                    break;
+                                }
+                            }
+                            sendMessage("AUTHORIZATION", fullAddress);
+                        } else if (messageType.toUpperCase().equals("REGISTRATION")) {
+                            String senderLogin = in.readUTF();
+                            String senderPassword = in.readUTF();
+                            User someUser = new User(senderLogin, senderPassword);
 
-                                Scanner usersFile = new Scanner(new File("src/users.txt"));
-                                // пропускаем уже записанных
-                                for (int i = 0; i < users.size(); i++) {
-                                    String info = usersFile.nextLine();
-                                }
-                                while (usersFile.hasNext()) {
-                                    String[] info = usersFile.nextLine().split(" ");
-                                    users.add(new User(info[0], info[1]));
-                                }
-                                successfulAuthorization = true;
-                                for (User user : users) {
-                                    if (user.equals(someUser)) {
-                                        successfulAuthorization = false;
-                                        break;
-                                    }
-                                }
-                                sendMessage("REGISTRATION", fullAddress);
+                            Scanner usersFile = new Scanner(new File("src/users.txt"));
+                            // пропускаем уже записанных
+                            for (int i = 0; i < users.size(); i++) {
+                                String info = usersFile.nextLine();
                             }
-                            case "SEND_ALL": {
-                                senderName = in.readUTF();
-                                message = in.readUTF();
-                                textAreaIncoming.append(senderName + " (" + fullAddress + "): \n" + message + "\n");
-                                sendMessage("SEND_ALL");
+                            while (usersFile.hasNext()) {
+                                String[] info = usersFile.nextLine().split(" ");
+                                users.add(new User(info[0], info[1]));
                             }
+                            successfulAuthorizationOrRegistration = true;
+                            for (User user : users) {
+                                if (user.equals(someUser) ||
+                                        (user.getLogin().equals(senderLogin) && !user.getPassword().equals(senderPassword))) {
+                                    successfulAuthorizationOrRegistration = false;
+                                    break;
+                                }
+                            }
+                            sendMessage("REGISTRATION", fullAddress);
+                        } else if (messageType.toUpperCase().equals("SEND_ALL")) {
+                            senderName = in.readUTF();
+                            message = in.readUTF();
+                            textAreaIncoming.append(senderName + " (" + fullAddress + "): \n" + message + "\n");
+                            sendMessage("SEND_ALL");
                         }
                     }
                 } catch (IOException e) {
@@ -145,17 +142,31 @@ public class MainFrame extends JFrame {
 
     private void sendMessage(String type, Address... addresses) {
 
-        if (type.toUpperCase().equals("AUTHORIZATION") || type.toUpperCase().equals("REGISTRATION")) {
+        if (type.toUpperCase().equals("AUTHORIZATION")) {
             try {
                 Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
                 final DataOutputStream out =
                         new DataOutputStream(socket.getOutputStream());
-                out.writeBoolean(successfulAuthorization);
+
+                out.writeUTF("AUTHORIZATION");
+                out.writeBoolean(successfulAuthorizationOrRegistration);
                 socket.close();
             } catch (Exception e) {
 
             }
-        } else if (type.toUpperCase().equals("SEND_ALL")) {
+        } else if (type.toUpperCase().equals("REGISTRATION")) {
+            try {
+                Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
+                final DataOutputStream out =
+                        new DataOutputStream(socket.getOutputStream());
+
+                out.writeUTF("REGISTRATION");
+                out.writeBoolean(successfulAuthorizationOrRegistration);
+                socket.close();
+            } catch (Exception e) {
+
+            }
+        }else if (type.toUpperCase().equals("SEND_ALL")) {
             for (int i = 0; i < allAddresses.size(); i++) {
                 deleteNumber = i;
                 try {
@@ -163,6 +174,7 @@ public class MainFrame extends JFrame {
                     final DataOutputStream out =
                             new DataOutputStream(socket.getOutputStream());
                     // Записываем в поток
+                    out.writeUTF("SEND_ALL");
                     out.writeUTF(senderName);
                     out.writeUTF(message);
                     // Закрываем сокет

@@ -20,4 +20,12 @@ public class User {
         return Objects.equals(login, user.login) &&
                 Objects.equals(password, user.password);
     }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }
