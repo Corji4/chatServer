@@ -3,11 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="d83e06f9-48af-400e-b446-b8a452617560" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/server/images/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/server/images/2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/server/main/MainFrame$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/server/main/MainFrame$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/server/main/MainFrame$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/server/main/MainFrame$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/server/main/MainFrame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/server/main/MainFrame.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/MainFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/MainFrame.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -78,7 +73,7 @@
       <workItem from="1587451075148" duration="18008000" />
       <workItem from="1587496195983" duration="9000" />
       <workItem from="1587981787410" duration="744000" />
-      <workItem from="1587986557308" duration="3516000" />
+      <workItem from="1587986557308" duration="4918000" />
     </task>
     <servers />
   </component>
@@ -97,5 +92,16 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/MainFrame.java</url>
+          <line>144</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

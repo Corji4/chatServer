@@ -140,6 +140,19 @@ public class MainFrame extends JFrame {
                         } else if (messageType.toUpperCase().equals("GET_PHOTO_BY_NAME")) {
                             photoName = in.readUTF();
                             sendMessage("GET_PHOTO_BY_NAME", fullAddress);
+                        } else if (messageType.toUpperCase().equals("NEW_PHOTO")) {
+                            int length = in.readInt();
+                            String fileName = in.readUTF();
+                            byte[] byteArray = new byte[length];
+                            File folder = new File("src/images/");
+                            File photo = new File("src/images/" + fileName + ".jpg");
+                            if (!photo.createNewFile()) {
+                                continue;
+                            }
+                            FileOutputStream fos = new FileOutputStream(photo);
+                            BufferedOutputStream bos = new BufferedOutputStream(fos);
+                            byteArray = in.readAllBytes();
+                            bos.write(byteArray, 0, byteArray.length);
                         }
                     }
                 } catch (IOException e) {
@@ -216,10 +229,10 @@ public class MainFrame extends JFrame {
         } else if (type.toUpperCase().equals("GET_PHOTO_BY_NAME")) {
             File photo = new File("src/images/" + photoName);
             try {
-                byte [] byteArray = new byte[(int) photo.length()];
+                byte[] byteArray = new byte[(int) photo.length()];
                 FileInputStream in = new FileInputStream(photo);
                 BufferedInputStream bis = new BufferedInputStream(in);
-                bis.read(byteArray,0, byteArray.length);
+                bis.read(byteArray, 0, byteArray.length);
 
                 Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
                 final DataOutputStream out =
