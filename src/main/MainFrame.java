@@ -81,78 +81,85 @@ public class MainFrame extends JFrame {
                         if (!(allAddresses.contains(fullAddress))) {
                             allAddresses.add(fullAddress);
                         }
-                        if (messageType.toUpperCase().equals("AUTHORIZATION")) {
-                            String senderLogin = in.readUTF();
-                            String senderPassword = in.readUTF();
-                            User someUser = new User(senderLogin, senderPassword);
+                        switch (messageType.toUpperCase()) {
+                            case "AUTHORIZATION": {
+                                String senderLogin = in.readUTF();
+                                String senderPassword = in.readUTF();
+                                User someUser = new User(senderLogin, senderPassword);
 
-                            Scanner usersFile = new Scanner(new File("src/users.txt"));
-                            // пропускаем уже записанных
-                            for (int i = 0; i < users.size(); i++) {
-                                String info = usersFile.nextLine();
-                            }
-                            while (usersFile.hasNext()) {
-                                String[] info = usersFile.nextLine().split(" ");
-                                users.add(new User(info[0], info[1]));
-                            }
-                            successfulAuthorizationOrRegistration = false;
-                            for (User user : users) {
-                                if (user.equals(someUser)) {
-                                    successfulAuthorizationOrRegistration = true;
-                                    break;
+                                Scanner usersFile = new Scanner(new File("src/users.txt"));
+                                // пропускаем уже записанных
+                                for (int i = 0; i < users.size(); i++) {
+                                    String info = usersFile.nextLine();
                                 }
+                                while (usersFile.hasNext()) {
+                                    String[] info = usersFile.nextLine().split(" ");
+                                    users.add(new User(info[0], info[1]));
+                                }
+                                successfulAuthorizationOrRegistration = false;
+                                for (User user : users) {
+                                    if (user.equals(someUser)) {
+                                        successfulAuthorizationOrRegistration = true;
+                                        break;
+                                    }
+                                }
+                                sendMessage("AUTHORIZATION", fullAddress);
+                                break;
                             }
-                            sendMessage("AUTHORIZATION", fullAddress);
-                        } else if (messageType.toUpperCase().equals("REGISTRATION")) {
-                            String senderLogin = in.readUTF();
-                            String senderPassword = in.readUTF();
-                            User someUser = new User(senderLogin, senderPassword);
+                            case "REGISTRATION": {
+                                String senderLogin = in.readUTF();
+                                String senderPassword = in.readUTF();
+                                User someUser = new User(senderLogin, senderPassword);
 
-                            Scanner usersFile = new Scanner(new File("src/users.txt"));
-                            // пропускаем уже записанных
-                            for (int i = 0; i < users.size(); i++) {
-                                String info = usersFile.nextLine();
-                            }
-                            while (usersFile.hasNext()) {
-                                String[] info = usersFile.nextLine().split(" ");
-                                users.add(new User(info[0], info[1]));
-                            }
-                            usersFile.close();
-                            successfulAuthorizationOrRegistration = true;
-                            for (User user : users) {
-                                if (user.equals(someUser) ||
-                                        (user.getLogin().equals(senderLogin) && !user.getPassword().equals(senderPassword))) {
-                                    successfulAuthorizationOrRegistration = false;
-                                    break;
+                                Scanner usersFile = new Scanner(new File("src/users.txt"));
+                                // пропускаем уже записанных
+                                for (int i = 0; i < users.size(); i++) {
+                                    String info = usersFile.nextLine();
                                 }
+                                while (usersFile.hasNext()) {
+                                    String[] info = usersFile.nextLine().split(" ");
+                                    users.add(new User(info[0], info[1]));
+                                }
+                                usersFile.close();
+                                successfulAuthorizationOrRegistration = true;
+                                for (User user : users) {
+                                    if (user.equals(someUser) ||
+                                            (user.getLogin().equals(senderLogin) && !user.getPassword().equals(senderPassword))) {
+                                        successfulAuthorizationOrRegistration = false;
+                                        break;
+                                    }
+                                }
+                                FileWriter addUser = new FileWriter(new File("src/users.txt"), true);
+                                addUser.write("\n" + senderLogin + " " + senderPassword);
+                                addUser.close();
+                                sendMessage("REGISTRATION", fullAddress);
+                                break;
                             }
-                            FileWriter addUser = new FileWriter(new File("src/users.txt"), true);
-                            addUser.write("\n" + senderLogin + " " + senderPassword);
-                            addUser.close();
-                            sendMessage("REGISTRATION", fullAddress);
-                        } else if (messageType.toUpperCase().equals("SEND_ALL")) {
-                            senderName = in.readUTF();
-                            message = in.readUTF();
-                            textAreaIncoming.append(senderName + " (" + fullAddress + "): \n" + message + "\n");
-                            sendMessage("SEND_ALL");
-                        } else if (messageType.toUpperCase().equals("GET_FILE_LIST")) {
-                            sendMessage("GET_FILE_LIST", fullAddress);
-                        } else if (messageType.toUpperCase().equals("GET_PHOTO_BY_NAME")) {
-                            photoName = in.readUTF();
-                            sendMessage("GET_PHOTO_BY_NAME", fullAddress);
-                        } else if (messageType.toUpperCase().equals("NEW_PHOTO")) {
-                            int length = in.readInt();
-                            String fileName = in.readUTF();
-                            byte[] byteArray = new byte[length];
-                            File folder = new File("src/images/");
-                            File photo = new File("src/images/" + fileName + ".jpg");
-                            if (!photo.createNewFile()) {
-                                continue;
-                            }
-                            FileOutputStream fos = new FileOutputStream(photo);
-                            BufferedOutputStream bos = new BufferedOutputStream(fos);
-                            byteArray = in.readAllBytes();
-                            bos.write(byteArray, 0, byteArray.length);
+                            case "SEND_ALL":
+                                senderName = in.readUTF();
+                                message = in.readUTF();
+                                textAreaIncoming.append(senderName + " (" + fullAddress + "): \n" + message + "\n");
+                                sendMessage("SEND_ALL");
+                                break;
+                            case "GET_FILE_LIST":
+                                sendMessage("GET_FILE_LIST", fullAddress);
+                                break;
+                            case "GET_PHOTO_BY_NAME":
+                                photoName = in.readUTF();
+                                sendMessage("GET_PHOTO_BY_NAME", fullAddress);
+                                break;
+                            case "NEW_PHOTO":
+                                String fileName = in.readUTF();
+                                byte[] byteArray;
+                                File photo = new File("src/images/" + fileName + ".jpg");
+                                if (!photo.createNewFile()) {
+                                    continue;
+                                }
+                                FileOutputStream fos = new FileOutputStream(photo);
+                                BufferedOutputStream bos = new BufferedOutputStream(fos);
+                                byteArray = in.readAllBytes();
+                                bos.write(byteArray, 0, byteArray.length);
+                                break;
                         }
                     }
                 } catch (IOException e) {
@@ -165,85 +172,91 @@ public class MainFrame extends JFrame {
     }
 
     private void sendMessage(String type, Address... addresses) {
-        if (type.toUpperCase().equals("AUTHORIZATION")) {
-            try {
-                Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
-                final DataOutputStream out =
-                        new DataOutputStream(socket.getOutputStream());
-
-                out.writeUTF("AUTHORIZATION");
-                out.writeBoolean(successfulAuthorizationOrRegistration);
-                socket.close();
-            } catch (Exception e) {
-
-            }
-        } else if (type.toUpperCase().equals("REGISTRATION")) {
-            try {
-                Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
-                final DataOutputStream out =
-                        new DataOutputStream(socket.getOutputStream());
-
-                out.writeUTF("REGISTRATION");
-                out.writeBoolean(successfulAuthorizationOrRegistration);
-                socket.close();
-            } catch (Exception e) {
-
-            }
-        } else if (type.toUpperCase().equals("SEND_ALL")) {
-            for (int i = 0; i < allAddresses.size(); i++) {
-                deleteNumber = i;
+        switch (type.toUpperCase()) {
+            case "AUTHORIZATION":
                 try {
-                    Socket socket = new Socket(allAddresses.get(i).getIP(), allAddresses.get(i).getPort());
+                    Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
                     final DataOutputStream out =
                             new DataOutputStream(socket.getOutputStream());
-                    // Записываем в поток
-                    out.writeUTF("SEND_ALL");
-                    out.writeUTF(senderName);
-                    out.writeUTF(message);
-                    // Закрываем сокет
+
+                    out.writeUTF("AUTHORIZATION");
+                    out.writeBoolean(successfulAuthorizationOrRegistration);
                     socket.close();
                 } catch (Exception e) {
-                    //DELETE address
-                    allAddresses.removeIf(address -> (address.equals(allAddresses.get(deleteNumber))));
-                    i--;
+
                 }
-            }
-        } else if (type.toUpperCase().equals("GET_FILE_LIST")) {
-            File folder = new File("src/images/");
-            File[] files = folder.listFiles();
-            StringBuilder fileNames = new StringBuilder();
-            for (File file : files) {
-                fileNames.append(file.getName()).append("\n");
-            }
-            System.out.println(fileNames);
-            try {
-                Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
-                final DataOutputStream out =
-                        new DataOutputStream(socket.getOutputStream());
-                out.writeUTF("GET_FILE_LIST");
-                out.writeUTF(fileNames.toString());
-                socket.close();
-            } catch (Exception e) {
+                break;
+            case "REGISTRATION":
+                try {
+                    Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
+                    final DataOutputStream out =
+                            new DataOutputStream(socket.getOutputStream());
 
-            }
-        } else if (type.toUpperCase().equals("GET_PHOTO_BY_NAME")) {
-            File photo = new File("src/images/" + photoName);
-            try {
-                byte[] byteArray = new byte[(int) photo.length()];
-                FileInputStream in = new FileInputStream(photo);
-                BufferedInputStream bis = new BufferedInputStream(in);
-                bis.read(byteArray, 0, byteArray.length);
+                    out.writeUTF("REGISTRATION");
+                    out.writeBoolean(successfulAuthorizationOrRegistration);
+                    socket.close();
+                } catch (Exception e) {
 
-                Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
-                final DataOutputStream out =
-                        new DataOutputStream(socket.getOutputStream());
-                out.writeUTF("GET_PHOTO_BY_NAME");
-                out.writeInt((int) byteArray.length);
-                out.write(byteArray, 0, byteArray.length);
-                socket.close();
-            } catch (Exception e) {
+                }
+                break;
+            case "SEND_ALL":
+                for (int i = 0; i < allAddresses.size(); i++) {
+                    deleteNumber = i;
+                    try {
+                        Socket socket = new Socket(allAddresses.get(i).getIP(), allAddresses.get(i).getPort());
+                        final DataOutputStream out =
+                                new DataOutputStream(socket.getOutputStream());
+                        // Записываем в поток
+                        out.writeUTF("SEND_ALL");
+                        out.writeUTF(senderName);
+                        out.writeUTF(message);
+                        // Закрываем сокет
+                        socket.close();
+                    } catch (Exception e) {
+                        //DELETE address
+                        allAddresses.removeIf(address -> (address.equals(allAddresses.get(deleteNumber))));
+                        i--;
+                    }
+                }
+                break;
+            case "GET_FILE_LIST":
+                File folder = new File("src/images/");
+                File[] files = folder.listFiles();
+                StringBuilder fileNames = new StringBuilder();
+                for (File file : files) {
+                    fileNames.append(file.getName()).append("\n");
+                }
+                System.out.println(fileNames);
+                try {
+                    Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
+                    final DataOutputStream out =
+                            new DataOutputStream(socket.getOutputStream());
+                    out.writeUTF("GET_FILE_LIST");
+                    out.writeUTF(fileNames.toString());
+                    socket.close();
+                } catch (Exception e) {
 
-            }
+                }
+                break;
+            case "GET_PHOTO_BY_NAME":
+                File photo = new File("src/images/" + photoName);
+                try {
+                    byte[] byteArray = new byte[(int) photo.length()];
+                    FileInputStream in = new FileInputStream(photo);
+                    BufferedInputStream bis = new BufferedInputStream(in);
+                    bis.read(byteArray, 0, byteArray.length);
+
+                    Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
+                    final DataOutputStream out =
+                            new DataOutputStream(socket.getOutputStream());
+                    out.writeUTF("GET_PHOTO_BY_NAME");
+                    out.writeInt((int) byteArray.length);
+                    out.write(byteArray, 0, byteArray.length);
+                    socket.close();
+                } catch (Exception e) {
+
+                }
+                break;
         }
     }
 
