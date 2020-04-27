@@ -3,9 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="d83e06f9-48af-400e-b446-b8a452617560" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/server/users.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/server/users.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/server/images/1.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/server/images/2.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/server/main/MainFrame$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/server/main/MainFrame$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/server/main/MainFrame$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/server/main/MainFrame$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/server/main/MainFrame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/server/main/MainFrame.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/MainFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/MainFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/users.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/users.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -75,7 +78,7 @@
       <workItem from="1587451075148" duration="18008000" />
       <workItem from="1587496195983" duration="9000" />
       <workItem from="1587981787410" duration="744000" />
-      <workItem from="1587986557308" duration="548000" />
+      <workItem from="1587986557308" duration="3516000" />
     </task>
     <servers />
   </component>

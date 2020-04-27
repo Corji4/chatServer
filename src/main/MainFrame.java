@@ -28,6 +28,8 @@ public class MainFrame extends JFrame {
 
     private String senderName = null;
     private String message = null;
+    private String photoName = null;
+
     private boolean successfulAuthorizationOrRegistration;
 
     private ArrayList<User> users = new ArrayList<>(0);
@@ -133,6 +135,11 @@ public class MainFrame extends JFrame {
                             message = in.readUTF();
                             textAreaIncoming.append(senderName + " (" + fullAddress + "): \n" + message + "\n");
                             sendMessage("SEND_ALL");
+                        } else if (messageType.toUpperCase().equals("GET_FILE_LIST")) {
+                            sendMessage("GET_FILE_LIST", fullAddress);
+                        } else if (messageType.toUpperCase().equals("GET_PHOTO_BY_NAME")) {
+                            photoName = in.readUTF();
+                            sendMessage("GET_PHOTO_BY_NAME", fullAddress);
                         }
                     }
                 } catch (IOException e) {
@@ -188,26 +195,42 @@ public class MainFrame extends JFrame {
                     i--;
                 }
             }
-        }
-        else if (type.toUpperCase().equals("GET_FILE_LIST")) {
-            File folder =   new File("src/images/");
-            File [] files = folder.listFiles();
+        } else if (type.toUpperCase().equals("GET_FILE_LIST")) {
+            File folder = new File("src/images/");
+            File[] files = folder.listFiles();
             StringBuilder fileNames = new StringBuilder();
             for (File file : files) {
                 fileNames.append(file.getName()).append("\n");
             }
             System.out.println(fileNames);
-//            try {
-//                Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
-//                final DataOutputStream out =
-//                        new DataOutputStream(socket.getOutputStream());
-//
-//                out.writeUTF("GET_FILE_LIST");
-//                out.writeUTF(fileNames.toString());
-//                socket.close();
-//            } catch (Exception e) {
-//
-//            }
+            try {
+                Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
+                final DataOutputStream out =
+                        new DataOutputStream(socket.getOutputStream());
+                out.writeUTF("GET_FILE_LIST");
+                out.writeUTF(fileNames.toString());
+                socket.close();
+            } catch (Exception e) {
+
+            }
+        } else if (type.toUpperCase().equals("GET_PHOTO_BY_NAME")) {
+            File photo = new File("src/images/" + photoName);
+            try {
+                byte [] byteArray = new byte[(int) photo.length()];
+                FileInputStream in = new FileInputStream(photo);
+                BufferedInputStream bis = new BufferedInputStream(in);
+                bis.read(byteArray,0, byteArray.length);
+
+                Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
+                final DataOutputStream out =
+                        new DataOutputStream(socket.getOutputStream());
+                out.writeUTF("GET_PHOTO_BY_NAME");
+                out.writeInt((int) byteArray.length);
+                out.write(byteArray, 0, byteArray.length);
+                socket.close();
+            } catch (Exception e) {
+
+            }
         }
     }
 
@@ -221,7 +244,6 @@ public class MainFrame extends JFrame {
                     frame = new MainFrame();
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.setVisible(true);
-                    frame.sendMessage("GET_FILE_LIST");
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }
