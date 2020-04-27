@@ -151,7 +151,7 @@ public class MainFrame extends JFrame {
                             case "NEW_PHOTO":
                                 String fileName = in.readUTF();
                                 byte[] byteArray;
-                                File photo = new File("src/images/" + fileName + ".jpg");
+                                File photo = new File("src/images/" + fileName);
                                 if (!photo.createNewFile()) {
                                     continue;
                                 }
@@ -226,7 +226,6 @@ public class MainFrame extends JFrame {
                 for (File file : files) {
                     fileNames.append(file.getName()).append("\n");
                 }
-                System.out.println(fileNames);
                 try {
                     Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
                     final DataOutputStream out =
@@ -250,7 +249,6 @@ public class MainFrame extends JFrame {
                     final DataOutputStream out =
                             new DataOutputStream(socket.getOutputStream());
                     out.writeUTF("GET_PHOTO_BY_NAME");
-                    out.writeInt((int) byteArray.length);
                     out.write(byteArray, 0, byteArray.length);
                     socket.close();
                 } catch (Exception e) {
