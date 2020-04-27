@@ -145,7 +145,6 @@ public class MainFrame extends JFrame {
     }
 
     private void sendMessage(String type, Address... addresses) {
-
         if (type.toUpperCase().equals("AUTHORIZATION")) {
             try {
                 Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
@@ -190,6 +189,26 @@ public class MainFrame extends JFrame {
                 }
             }
         }
+        else if (type.toUpperCase().equals("GET_FILE_LIST")) {
+            File folder =   new File("src/images/");
+            File [] files = folder.listFiles();
+            StringBuilder fileNames = new StringBuilder();
+            for (File file : files) {
+                fileNames.append(file.getName()).append("\n");
+            }
+            System.out.println(fileNames);
+//            try {
+//                Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
+//                final DataOutputStream out =
+//                        new DataOutputStream(socket.getOutputStream());
+//
+//                out.writeUTF("GET_FILE_LIST");
+//                out.writeUTF(fileNames.toString());
+//                socket.close();
+//            } catch (Exception e) {
+//
+//            }
+        }
     }
 
 
@@ -202,6 +221,7 @@ public class MainFrame extends JFrame {
                     frame = new MainFrame();
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.setVisible(true);
+                    frame.sendMessage("GET_FILE_LIST");
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }
