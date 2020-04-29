@@ -141,24 +141,20 @@ public class MainFrame extends JFrame {
                                 textAreaIncoming.append(senderName + " (" + fullAddress + "): \n" + message + "\n");
                                 sendMessage("SEND_ALL");
                                 break;
-                            case "GET_FILE_LIST":
-                                sendMessage("GET_FILE_LIST", fullAddress);
-                                break;
-                            case "GET_PHOTO_BY_NAME":
+                            case "SEND_WITH_PHOTO":
+                                senderName = in.readUTF();
+                                message = in.readUTF();
                                 photoName = in.readUTF();
-                                sendMessage("GET_PHOTO_BY_NAME", fullAddress);
-                                break;
-                            case "NEW_PHOTO":
-                                String fileName = in.readUTF();
                                 byte[] byteArray;
-                                File photo = new File("src/images/" + fileName);
+                                File photo = new File("src/images/" + photoName);
                                 if (!photo.createNewFile()) {
-                                    continue;
+                                    //
                                 }
                                 FileOutputStream fos = new FileOutputStream(photo);
                                 BufferedOutputStream bos = new BufferedOutputStream(fos);
                                 byteArray = in.readAllBytes();
                                 bos.write(byteArray, 0, byteArray.length);
+                                sendMessage("SEND_WITH_PHOTO");
                                 break;
                         }
                     }
@@ -219,40 +215,29 @@ public class MainFrame extends JFrame {
                     }
                 }
                 break;
-            case "GET_FILE_LIST":
-                File folder = new File("src/images/");
-                File[] files = folder.listFiles();
-                StringBuilder fileNames = new StringBuilder();
-                for (File file : files) {
-                    fileNames.append(file.getName()).append("\n");
-                }
-                try {
-                    Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
-                    final DataOutputStream out =
-                            new DataOutputStream(socket.getOutputStream());
-                    out.writeUTF("GET_FILE_LIST");
-                    out.writeUTF(fileNames.toString());
-                    socket.close();
-                } catch (Exception e) {
-
-                }
-                break;
-            case "GET_PHOTO_BY_NAME":
-                File photo = new File("src/images/" + photoName);
-                try {
-                    byte[] byteArray = new byte[(int) photo.length()];
-                    FileInputStream in = new FileInputStream(photo);
-                    BufferedInputStream bis = new BufferedInputStream(in);
-                    bis.read(byteArray, 0, byteArray.length);
-
-                    Socket socket = new Socket(addresses[0].getIP(), addresses[0].getPort());
-                    final DataOutputStream out =
-                            new DataOutputStream(socket.getOutputStream());
-                    out.writeUTF("GET_PHOTO_BY_NAME");
-                    out.write(byteArray, 0, byteArray.length);
-                    socket.close();
-                } catch (Exception e) {
-
+            case "SEND_WITH_PHOTO":
+                for (int i = 0; i < allAddresses.size(); i++) {
+                    deleteNumber = i;
+                    File photo = new File("src/images/" + photoName);
+                    try {
+                        byte[] byteArray = new byte[(int) photo.length()];
+                        FileInputStream in = new FileInputStream(photo);
+                        BufferedInputStream bis = new BufferedInputStream(in);
+                        bis.read(byteArray, 0, byteArray.length);
+                        Socket socket = new Socket(allAddresses.get(i).getIP(), allAddresses.get(i).getPort());
+                        final DataOutputStream out =
+                                new DataOutputStream(socket.getOutputStream());
+                        out.writeUTF("SEND_WITH_PHOTO");
+                        out.writeUTF(senderName);
+                        out.writeUTF(message);
+                        out.writeUTF(photoName);
+                        out.write(byteArray, 0, byteArray.length);
+                        socket.close();
+                    } catch (Exception e) {
+                        //DELETE address
+                        allAddresses.removeIf(address -> (address.equals(allAddresses.get(deleteNumber))));
+                        i--;
+                    }
                 }
                 break;
         }
