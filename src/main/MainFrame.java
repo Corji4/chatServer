@@ -66,6 +66,28 @@ public class MainFrame extends JFrame {
                 .addGap(MEDIUM_GAP)
                 .addComponent(messagePanel)
                 .addContainerGap());
+
+        File folder = new File("d:/chat/server/images/");
+        if (!folder.exists()) {
+            folder = new File("d:/chat/");
+            folder.mkdir();
+            folder = new File("d:/chat/server/");
+            folder.mkdir();
+            folder = new File("d:/chat/server/images/");
+            folder.mkdir();
+        }
+        folder = new File("d:/chat/server/data/");
+        if (!folder.exists()) {
+            folder = new File("d:/chat/server/data/");
+            folder.mkdir();
+        }
+        folder = new File("d:/chat/server/data/users.txt");
+        try {
+            if (folder.createNewFile()) ;
+        } catch (Exception e) {
+        }
+        ;
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -87,7 +109,7 @@ public class MainFrame extends JFrame {
                                 String senderPassword = in.readUTF();
                                 User someUser = new User(senderLogin, senderPassword);
 
-                                Scanner usersFile = new Scanner(new File("src/users.txt"));
+                                Scanner usersFile = new Scanner(new File("d:/chat/server/data/users.txt"));
                                 // пропускаем уже записанных
                                 for (int i = 0; i < users.size(); i++) {
                                     String info = usersFile.nextLine();
@@ -111,7 +133,7 @@ public class MainFrame extends JFrame {
                                 String senderPassword = in.readUTF();
                                 User someUser = new User(senderLogin, senderPassword);
 
-                                Scanner usersFile = new Scanner(new File("src/users.txt"));
+                                Scanner usersFile = new Scanner(new File("d:/chat/server/data/users.txt"));
                                 // пропускаем уже записанных
                                 for (int i = 0; i < users.size(); i++) {
                                     String info = usersFile.nextLine();
@@ -129,8 +151,8 @@ public class MainFrame extends JFrame {
                                         break;
                                     }
                                 }
-                                FileWriter addUser = new FileWriter(new File("src/users.txt"), true);
-                                addUser.write("\n" + senderLogin + " " + senderPassword);
+                                FileWriter addUser = new FileWriter(new File("d:/chat/server/data/users.txt"), true);
+                                addUser.write(senderLogin + " " + senderPassword + "\n");
                                 addUser.close();
                                 sendMessage("REGISTRATION", fullAddress);
                                 break;
@@ -146,7 +168,7 @@ public class MainFrame extends JFrame {
                                 message = in.readUTF();
                                 photoName = in.readUTF();
                                 byte[] byteArray;
-                                File photo = new File("src/images/" + photoName);
+                                File photo = new File("d:/chat/server/images/" + photoName);
                                 if (!photo.createNewFile()) {
                                     //
                                 }
@@ -218,7 +240,7 @@ public class MainFrame extends JFrame {
             case "SEND_WITH_PHOTO":
                 for (int i = 0; i < allAddresses.size(); i++) {
                     deleteNumber = i;
-                    File photo = new File("src/images/" + photoName);
+                    File photo = new File("d:/chat/server/images/" + photoName);
                     try {
                         byte[] byteArray = new byte[(int) photo.length()];
                         FileInputStream in = new FileInputStream(photo);
